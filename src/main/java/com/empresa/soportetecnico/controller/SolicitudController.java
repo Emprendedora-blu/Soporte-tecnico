@@ -2,6 +2,8 @@ package com.empresa.soportetecnico.controller;
 
 import com.empresa.soportetecnico.common.ApiResponse;
 import com.empresa.soportetecnico.common.ApiResponseUtil;
+import com.empresa.soportetecnico.dto.ActualizarEstadoDTO;
+import com.empresa.soportetecnico.dto.AsignarTecnicoDTO;
 import com.empresa.soportetecnico.dto.SolicitudRequestDTO;
 import com.empresa.soportetecnico.dto.SolicitudUpdateDTO;
 import com.empresa.soportetecnico.model.Solicitud;
@@ -57,7 +59,7 @@ public class SolicitudController {
         return ResponseEntity.ok(ApiResponseUtil.success("Solicitud encontrada", solicitud));
     }
 
-    @Operation(summary = "Registrar una nueva solicitud de soporte tecnico")
+    @Operation(summary = "Registrar una nueva solicitud de soporte SIN TECNICO")
     @PostMapping
     public ResponseEntity<ApiResponse<Solicitud>> crear(@Valid @RequestBody SolicitudRequestDTO dto) {
         Solicitud solicitudCreada = solicitudService.crear(dto);
@@ -72,6 +74,22 @@ public class SolicitudController {
             @PathVariable Long id, @Valid @RequestBody SolicitudUpdateDTO dto) {
         Solicitud solicitudActualizada = solicitudService.actualizar(id, dto);
         return ResponseEntity.ok(ApiResponseUtil.success("Solicitud actualizada correctamente", solicitudActualizada));
+    }
+
+    @Operation(summary = "Asignar un tecnico a una solicitud existente)")
+    @PatchMapping("/{id}/tecnico")
+    public ResponseEntity<ApiResponse<Solicitud>> asignarTecnico(
+            @PathVariable Long id, @Valid @RequestBody AsignarTecnicoDTO dto) {
+        Solicitud solicitud = solicitudService.asignarTecnico(id, dto.getTecnicoId());
+        return ResponseEntity.ok(ApiResponseUtil.success("Tecnico asignado correctamente", solicitud));
+    }
+
+    @Operation(summary = "Actualizar el estado de una solicitud (PENDIENTE -> EN_PROCESO | CANCELADA, EN_PROCESO -> RESUELTA | CANCELADA)")
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<ApiResponse<Solicitud>> actualizarEstado(
+            @PathVariable Long id, @Valid @RequestBody ActualizarEstadoDTO dto) {
+        Solicitud solicitud = solicitudService.actualizarEstado(id, dto.getEstado());
+        return ResponseEntity.ok(ApiResponseUtil.success("Estado actualizado correctamente", solicitud));
     }
 
     @Operation(summary = "Eliminar una solicitud de soporte por su id")

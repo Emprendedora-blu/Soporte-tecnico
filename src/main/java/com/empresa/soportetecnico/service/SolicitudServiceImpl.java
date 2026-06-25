@@ -12,6 +12,7 @@ import com.empresa.soportetecnico.model.Tecnico;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,7 +70,7 @@ public class SolicitudServiceImpl implements SolicitudService {
         }
 
         PrioridadSolicitud prioridad = convertirPrioridad(dto.getPrioridad());
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         Solicitud nuevaSolicitud = Solicitud.builder()
                 .id(contadorId.incrementAndGet())
@@ -108,15 +109,59 @@ public class SolicitudServiceImpl implements SolicitudService {
             solicitudExistente.setTecnicoAsignado(tecnico);
         }
 
-        solicitudExistente.setFechaActualizacion(LocalDateTime.now());
+        solicitudExistente.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         solicitudes.put(id, solicitudExistente);
         return solicitudExistente;
+    }
+
+    @Override
+    public Solicitud asignarTecnico(Long id, Long tecnicoId) {
+        Solicitud solicitud = buscarPorId(id);
+
+        if (solicitud.getEstado() == EstadoSolicitud.RESUELTA || solicitud.getEstado() == EstadoSolicitud.CANCELADA) {
+            throw new SolicitudInvalidaException(
+                    "No se puede asignar un tecnico a una solicitud en estado " + solicitud.getEstado());
+        }
+
+        Tecnico tecnico = tecnicoService.buscarPorId(tecnicoId);
+        solicitud.setTecnicoAsignado(tecnico);
+        solicitud.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        solicitudes.put(id, solicitud);
+        return solicitud;
+    }
+
+    @Override
+    public Solicitud actualizarEstado(Long id, String nuevoEstado) {
+        Solicitud solicitud = buscarPorId(id);
+        EstadoSolicitud estadoActual = solicitud.getEstado();
+        EstadoSolicitud estadoNuevo = convertirEstado(nuevoEstado);
+
+        validarTransicionEstado(estadoActual, estadoNuevo);
+
+        solicitud.setEstado(estadoNuevo);
+        solicitud.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        solicitudes.put(id, solicitud);
+        return solicitud;
     }
 
     @Override
     public void eliminar(Long id) {
         buscarPorId(id);
         solicitudes.remove(id);
+    }
+
+    private void validarTransicionEstado(EstadoSolicitud actual, EstadoSolicitud nuevo) {
+        boolean valida = switch (actual) {
+            case PENDIENTE -> nuevo == EstadoSolicitud.EN_PROCESO || nuevo == EstadoSolicitud.CANCELADA;
+            case EN_PROCESO -> nuevo == EstadoSolicitud.RESUELTA || nuevo == EstadoSolicitud.CANCELADA;
+            case RESUELTA, CANCELADA -> false;
+        };
+
+        if (!valida) {
+            throw new SolicitudInvalidaException(
+                    "Transicion de estado invalida: no se puede pasar de " + actual + " a " + nuevo +
+                    ". Transiciones validas: PENDIENTE -> EN_PROCESO | CANCELADA, EN_PROCESO -> RESUELTA | CANCELADA");
+        }
     }
 
     private PrioridadSolicitud convertirPrioridad(String valor) {

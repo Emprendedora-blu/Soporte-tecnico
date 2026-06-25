@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Schema(description = "Respuesta estandar de la API")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,7 +26,7 @@ public class ApiResponse<T> {
         this.responseCode = responseCode;
         this.responseMessage = responseMessage;
         this.data = data;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     public String getResponseCode() { return responseCode; }

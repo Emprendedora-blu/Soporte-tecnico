@@ -22,5 +22,9 @@ public interface SolicitudService {
 
     Solicitud actualizar(Long id, SolicitudUpdateDTO dto);
 
+    Solicitud asignarTecnico(Long id, Long tecnicoId);
+
+    Solicitud actualizarEstado(Long id, String nuevoEstado);
+
     void eliminar(Long id);
 }
