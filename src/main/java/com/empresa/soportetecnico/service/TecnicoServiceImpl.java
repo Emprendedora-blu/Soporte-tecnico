@@ -9,9 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Implementacion de TecnicoService que simula la persistencia utilizando
- * un Map en memoria.
+/*
+Implementacion de TecnicoService que simula la persistencia utilizando un Map en memoria.
  */
 @Service
 public class TecnicoServiceImpl implements TecnicoService {

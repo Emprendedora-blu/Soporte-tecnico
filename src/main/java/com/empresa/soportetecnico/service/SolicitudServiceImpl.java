@@ -18,14 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-/**
- * Implementacion de SolicitudService.
- *
- * Controla toda la logica de manipulacion de las solicitudes de soporte:
- * valida los datos relacionados (cliente y tecnico existentes, prioridad
- * y estado validos), gestiona las transiciones de estado y simula la
- * persistencia en un Map en memoria, reflejando el comportamiento de una
- * base de datos real sin depender de una.
+/*
+ Implementacion de SolicitudService.
+ Controla toda la logica de manipulacion de las solicitudes de soporte:
+ valida los datos relacionados
  */
 @Service
 public class SolicitudServiceImpl implements SolicitudService {

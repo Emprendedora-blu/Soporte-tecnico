@@ -9,11 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Implementacion de ClienteService que simula la persistencia utilizando
- * un Map en memoria. No requiere conexion a base de datos: los datos
- * existen unicamente durante la ejecucion de la aplicacion, tal como lo
- * pide el alcance del proyecto.
+/*
+ Implementacion de ClienteService que simula la persistencia utilizando un Map en memoria.
  */
 @Service
 public class ClienteServiceImpl implements ClienteService {

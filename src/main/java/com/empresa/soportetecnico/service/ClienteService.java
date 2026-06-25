@@ -4,11 +4,10 @@ import com.empresa.soportetecnico.model.Cliente;
 
 import java.util.List;
 
-/**
- * Define la logica de negocio disponible para la gestion de clientes.
- * Separar la interfaz de su implementacion permite cambiar la forma de
- * almacenamiento (por ejemplo, de una lista en memoria a una base de
- * datos real) sin afectar a quienes consumen el servicio.
+/*
+ Define la logica de negocio disponible para la gestion de clientes.
+ Separar la interfaz de su implementacion permite cambiar la forma de
+ almacenamiento.
  */
 public interface ClienteService {
 

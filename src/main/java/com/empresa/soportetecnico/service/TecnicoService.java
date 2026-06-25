@@ -4,9 +4,8 @@ import com.empresa.soportetecnico.model.Tecnico;
 
 import java.util.List;
 
-/**
- * Define la logica de negocio disponible para la gestion de tecnicos
- * de soporte.
+/*
+Define la logica de negocio disponible para la gestion de tecnicos de soporte.
  */
 public interface TecnicoService {
 

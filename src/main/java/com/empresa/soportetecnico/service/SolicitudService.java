@@ -6,9 +6,9 @@ import com.empresa.soportetecnico.model.Solicitud;
 
 import java.util.List;
 
-/**
- * Define la logica de negocio disponible para la gestion de solicitudes
- * de soporte tecnico: el caso de uso central del sistema.
+/*
+ Define la logica de negocio disponible para la gestion de solicitudes
+ de soporte tecnico: el caso de uso central del sistema.
  */
 public interface SolicitudService {
 
