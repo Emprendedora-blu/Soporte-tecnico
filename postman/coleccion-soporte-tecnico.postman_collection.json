@@ -1,0 +1,209 @@
+{
+  "info": {
+    "name": "API Solicitudes de Soporte Tecnico",
+    "description": "Coleccion de pruebas funcionales para la API RESTful de gestion de solicitudes de soporte tecnico (Java + Spring Boot).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ],
+  "item": [
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana Torres\",\n  \"correo\": \"ana.torres@correo.com\",\n  \"telefono\": \"999111222\",\n  \"empresa\": \"Comercial ABC\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/clientes", "host": ["{{baseUrl}}"], "path": ["api", "clientes"] }
+          }
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/clientes", "host": ["{{baseUrl}}"], "path": ["api", "clientes"] }
+          }
+        },
+        {
+          "name": "Obtener cliente por id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/clientes/1", "host": ["{{baseUrl}}"], "path": ["api", "clientes", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana Torres Gomez\",\n  \"correo\": \"ana.torres@correo.com\",\n  \"telefono\": \"999111222\",\n  \"empresa\": \"Comercial ABC SAC\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/clientes/1", "host": ["{{baseUrl}}"], "path": ["api", "clientes", "1"] }
+          }
+        },
+        {
+          "name": "Eliminar cliente",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/clientes/1", "host": ["{{baseUrl}}"], "path": ["api", "clientes", "1"] }
+          }
+        },
+        {
+          "name": "Crear cliente - error de validacion (correo invalido)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\",\n  \"correo\": \"correo-no-valido\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/clientes", "host": ["{{baseUrl}}"], "path": ["api", "clientes"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tecnicos",
+      "item": [
+        {
+          "name": "Crear tecnico",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Luis Ramirez\",\n  \"correo\": \"luis.ramirez@empresa.com\",\n  \"especialidad\": \"Redes\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/tecnicos", "host": ["{{baseUrl}}"], "path": ["api", "tecnicos"] }
+          }
+        },
+        {
+          "name": "Listar tecnicos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/tecnicos", "host": ["{{baseUrl}}"], "path": ["api", "tecnicos"] }
+          }
+        },
+        {
+          "name": "Obtener tecnico por id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/tecnicos/1", "host": ["{{baseUrl}}"], "path": ["api", "tecnicos", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar tecnico",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Luis Ramirez Paz\",\n  \"correo\": \"luis.ramirez@empresa.com\",\n  \"especialidad\": \"Redes y telecomunicaciones\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/tecnicos/1", "host": ["{{baseUrl}}"], "path": ["api", "tecnicos", "1"] }
+          }
+        },
+        {
+          "name": "Eliminar tecnico",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/tecnicos/1", "host": ["{{baseUrl}}"], "path": ["api", "tecnicos", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Solicitudes",
+      "item": [
+        {
+          "name": "Crear solicitud",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"No enciende la impresora\",\n  \"descripcion\": \"La impresora de red no responde desde esta mañana\",\n  \"prioridad\": \"ALTA\",\n  \"clienteId\": 1,\n  \"tecnicoId\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitudes", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes"] }
+          }
+        },
+        {
+          "name": "Listar solicitudes",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/solicitudes", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes"] }
+          }
+        },
+        {
+          "name": "Listar solicitudes por estado",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/solicitudes/estado/PENDIENTE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "solicitudes", "estado", "PENDIENTE"]
+            }
+          }
+        },
+        {
+          "name": "Obtener solicitud por id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/solicitudes/1", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar solicitud (cambiar estado)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"EN_PROCESO\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitudes/1", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes", "1"] }
+          }
+        },
+        {
+          "name": "Eliminar solicitud",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/solicitudes/1", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes", "1"] }
+          }
+        },
+        {
+          "name": "Crear solicitud - error (cliente inexistente)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Falla de red\",\n  \"descripcion\": \"No hay conexion a internet\",\n  \"prioridad\": \"MEDIA\",\n  \"clienteId\": 999\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitudes", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes"] }
+          }
+        },
+        {
+          "name": "Crear solicitud - error (prioridad invalida)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Error de login\",\n  \"descripcion\": \"El usuario no puede acceder\",\n  \"prioridad\": \"URGENTISIMA\",\n  \"clienteId\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitudes", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes"] }
+          }
+        }
+      ]
+    }
+  ]
+}
