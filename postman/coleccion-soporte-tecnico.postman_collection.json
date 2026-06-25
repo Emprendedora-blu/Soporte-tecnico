@@ -18,7 +18,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Ana Torres\",\n  \"correo\": \"ana.torres@correo.com\",\n  \"telefono\": \"999111222\",\n  \"empresa\": \"Comercial ABC\"\n}"
+              "raw": "{\n  \"nombre\": \"Flor Torres\",\n  \"correo\": \"flortorres@idat.pe\",\n  \"telefono\": \"958324912\",\n  \"empresa\": \"Teconologia Blu\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/clientes", "host": ["{{baseUrl}}"], "path": ["api", "clientes"] }
           }
