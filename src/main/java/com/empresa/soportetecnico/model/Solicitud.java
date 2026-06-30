@@ -1,5 +1,6 @@
 package com.empresa.soportetecnico.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,8 @@ public class Solicitud {
     private PrioridadSolicitud prioridad;
     private Cliente cliente;
     private Tecnico tecnicoAsignado;
+    @JsonFormat(pattern = "yyyy-MM-dd:HH:mm")
     private LocalDateTime fechaCreacion;
+    @JsonFormat(pattern = "yyyy-MM-dd:HH:mm")
     private LocalDateTime fechaActualizacion;
 }

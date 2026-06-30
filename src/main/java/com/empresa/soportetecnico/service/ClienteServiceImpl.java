@@ -4,6 +4,8 @@ import com.empresa.soportetecnico.exception.RecursoNoEncontradoException;
 import com.empresa.soportetecnico.model.Cliente;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +38,7 @@ public class ClienteServiceImpl implements ClienteService {
     public Cliente crear(Cliente cliente) {
         Long nuevoId = contadorId.incrementAndGet();
         cliente.setId(nuevoId);
+        cliente.setFechaRegistro(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         clientes.put(nuevoId, cliente);
         return cliente;
     }
