@@ -1,0 +1,127 @@
+<div class="page-header">
+  <div>
+    <h1>Técnicos</h1>
+    <p>Técnicos disponibles para atender solicitudes de soporte.</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirCrear()">+ Nuevo técnico</button>
+</div>
+
+<div class="stat-grid directory-stats">
+  <app-stat-card label="Técnicos registrados" [value]="stats().total" icon="users" tone="primary" hint="Personal de soporte" />
+  <app-stat-card label="Disponibles" [value]="stats().disponibles" icon="check" tone="success" hint="Sin solicitudes activas" />
+  <app-stat-card label="Atendiendo" [value]="stats().atendiendo" icon="activity" tone="warning" hint="Con solicitudes activas" />
+  <app-stat-card label="Especialidades" [value]="stats().especialidades" icon="wrench" tone="info" hint="Áreas de servicio" />
+</div>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<div class="toolbar directory-toolbar">
+  <div class="search-input">
+    <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+      <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
+      <path d="m17 17-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </svg>
+    <input type="text" placeholder="Buscar técnico, correo o especialidad" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+  </div>
+  <span class="directory-count">{{ filtrados().length }} resultados</span>
+</div>
+
+<div class="table-wrapper directory-table">
+  @if (loading()) {
+    <div class="empty-state">Cargando...</div>
+  } @else if (tecnicos().length === 0) {
+    <div class="empty-state">Aún no hay técnicos registrados.</div>
+  } @else if (filtrados().length === 0) {
+    <div class="empty-state">No hay técnicos que coincidan con la búsqueda.</div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Especialidad</th>
+          <th class="text-center">Solicitudes asignadas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (t of filtrados(); track t.id) {
+          <tr>
+            <td>{{ t.id }}</td>
+            <td>
+              <div class="entity-cell">
+                <span class="entity-avatar entity-avatar--tech">{{ iniciales(t.nombre) }}</span>
+                <strong>{{ t.nombre }}</strong>
+              </div>
+            </td>
+            <td>{{ t.correo }}</td>
+            <td><span class="soft-chip soft-chip--violet">{{ t.especialidad }}</span></td>
+            <td class="text-center"><span class="soft-chip">{{ solicitudesDeTecnico(t.id) }}</span></td>
+            <td class="actions actions--icons">
+              <button type="button" class="icon-btn" title="Editar" aria-label="Editar técnico" (click)="abrirEditar(t)">
+                <svg viewBox="0 0 20 20" fill="none"><path d="m4 13.8-.8 3 3-.8L15 7.2 12.8 5 4 13.8Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="m11.7 6.1 2.2 2.2" stroke="currentColor" stroke-width="1.5"/></svg>
+              </button>
+              <button type="button" class="icon-btn icon-btn--danger" title="Eliminar" aria-label="Eliminar técnico" (click)="eliminar(t)">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4.5 6h11M8 3.5h4M6.2 6l.6 10h6.4l.6-10M8.3 9v4.5M11.7 9v4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+@if (modalOpen()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <form class="modal" [formGroup]="form" (ngSubmit)="guardar()" (click)="$event.stopPropagation()">
+      <h2>{{ editing() ? 'Editar técnico' : 'Nuevo técnico' }}</h2>
+
+      @if (formError()) {
+        <div class="alert alert-error">{{ formError() }}</div>
+      }
+
+      <div class="form-field">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" />
+      </div>
+
+      <div class="form-field">
+        <label for="correo">Correo</label>
+        <input id="correo" type="email" formControlName="correo" />
+      </div>
+
+      <div class="form-field">
+        <label for="especialidad">Especialidad</label>
+        <input id="especialidad" type="text" formControlName="especialidad" />
+      </div>
+
+      <div class="form-field">
+        <label for="usuarioId">Cuenta de login vinculada</label>
+        <select id="usuarioId" formControlName="usuarioId">
+          <option [ngValue]="null" disabled>Selecciona una cuenta con rol TECNICO</option>
+          @for (u of usuariosTecnico(); track u.id) {
+            <option [ngValue]="u.id">{{ u.email }}</option>
+          }
+        </select>
+        <span class="field-hint">
+          @if (usuariosTecnico().length === 0) {
+            No hay cuentas con rol TECNICO todavía. Créala primero en Usuarios.
+          } @else {
+            Necesaria para que este técnico vea sus asignaciones al iniciar sesión.
+          }
+        </span>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">
+          {{ saving() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}

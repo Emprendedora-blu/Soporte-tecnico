@@ -1,0 +1,137 @@
+<div class="page-header">
+  <div>
+    <h1>Mis asignaciones</h1>
+    <p>Solicitudes de soporte asignadas a ti.</p>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <app-stat-card label="Total asignadas" [value]="stats().total" icon="clipboard" tone="primary" hint="Asignadas a ti" />
+  <app-stat-card label="Pendientes" [value]="stats().pendientes" icon="clock" tone="warning" hint="Por atender" />
+  <app-stat-card label="En proceso" [value]="stats().enProceso" icon="activity" tone="info" hint="En atención" />
+  <app-stat-card label="Resueltas" [value]="stats().resueltas" icon="check" tone="success" hint="Completadas" />
+</div>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<div class="toolbar">
+  <div class="search-input">
+    <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+      <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
+      <path d="m17 17-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </svg>
+    <input
+      type="text"
+      placeholder="Buscar asignaciones"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="searchTerm.set($event)"
+    />
+  </div>
+
+  <select class="filter-select" [ngModel]="filtroCliente()" (ngModelChange)="filtroCliente.set($event)">
+    <option value="">Cliente: Todos</option>
+    @for (c of clientesUnicos(); track c) {
+      <option [value]="c">{{ c }}</option>
+    }
+  </select>
+
+  <select class="filter-select" [ngModel]="filtroPrioridad()" (ngModelChange)="filtroPrioridad.set($event)">
+    <option value="">Prioridad: Todas</option>
+    @for (p of prioridades; track p) {
+      <option [value]="p">{{ p }}</option>
+    }
+  </select>
+
+  <select class="filter-select" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+    <option value="">Estado: Todos</option>
+    @for (e of estados; track e) {
+      <option [value]="e">{{ e }}</option>
+    }
+  </select>
+
+  <button type="button" class="btn btn-secondary" (click)="limpiarFiltros()">Limpiar filtros</button>
+</div>
+
+@if (loading()) {
+  <div class="empty-state">Cargando...</div>
+} @else if (filtradas().length === 0) {
+  <div class="empty-state">
+    @if (solicitudes().length === 0) {
+      No tienes solicitudes asignadas por el momento.
+    } @else {
+      No hay asignaciones que coincidan con la búsqueda.
+    }
+  </div>
+} @else {
+  @for (s of filtradas(); track s.id) {
+    <div class="solicitud-card" [style.--priority-color]="colorPrioridad(s)">
+      <div class="solicitud-card__id"><span>SOLICITUD</span>{{ s.id }}</div>
+      <div class="solicitud-card__main">
+        <p class="solicitud-card__title">{{ s.titulo }}</p>
+        <p class="solicitud-card__meta">{{ s.cliente.nombre }} · {{ s.descripcion }}</p>
+      </div>
+      <div class="solicitud-card__col">
+        <p class="solicitud-card__col-label">Prioridad</p>
+        <app-prioridad-badge [prioridad]="s.prioridad" />
+      </div>
+      <div class="solicitud-card__col">
+        <p class="solicitud-card__col-label">Estado</p>
+        <app-estado-badge [estado]="s.estado" />
+      </div>
+      <div class="solicitud-card__col">
+        <p class="solicitud-card__col-label">Observaciones</p>
+        <p class="solicitud-card__col-value">{{ s.observaciones || '—' }}</p>
+      </div>
+      <div class="solicitud-card__actions">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="abrirActualizar(s)">
+          Actualizar
+        </button>
+        @if (puedeCerrar(s)) {
+          <button
+            type="button"
+            class="btn btn-success btn-sm"
+            [disabled]="closingId() === s.id"
+            (click)="cerrarSolicitud(s)"
+          >
+            {{ closingId() === s.id ? 'Cerrando...' : 'Cerrar solicitud' }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+}
+
+@if (modalOpen()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <form class="modal" [formGroup]="form" (ngSubmit)="guardar()" (click)="$event.stopPropagation()">
+      <h2>Actualizar solicitud #{{ editing()?.id }}</h2>
+
+      @if (formError()) {
+        <div class="alert alert-error">{{ formError() }}</div>
+      }
+
+      <div class="form-field">
+        <label for="estado">Nuevo estado</label>
+        <select id="estado" formControlName="estado">
+          @for (e of estados; track e) {
+            <option [value]="e">{{ e }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="observaciones">Observaciones</label>
+        <textarea id="observaciones" formControlName="observaciones"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">
+          {{ saving() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}

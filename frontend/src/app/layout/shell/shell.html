@@ -1,0 +1,26 @@
+<div class="shell">
+  <app-sidebar />
+  <section class="shell__workspace">
+    <header class="topbar">
+      <div class="topbar__context">
+        <span class="topbar__pulse" aria-hidden="true"></span>
+        Centro de atención
+      </div>
+
+      @if (user()) {
+        <div class="topbar__profile">
+          <div class="topbar__user-copy">
+            <strong>{{ displayName }}</strong>
+            <span>{{ user()!.email }}</span>
+          </div>
+          <span class="topbar__role">{{ primaryRole }}</span>
+          <span class="topbar__avatar" aria-hidden="true">{{ initials }}</span>
+        </div>
+      }
+    </header>
+
+    <main class="shell__content">
+      <router-outlet />
+    </main>
+  </section>
+</div>

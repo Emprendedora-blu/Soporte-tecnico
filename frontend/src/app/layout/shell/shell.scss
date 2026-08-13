@@ -1,0 +1,115 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  background: var(--color-bg);
+
+  &__workspace {
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__content {
+    width: min(100%, 1560px);
+    margin: 0 auto;
+    padding: 1.75rem 2rem 2.5rem;
+  }
+}
+
+.topbar {
+  min-height: 76px;
+  margin: 0.75rem 1rem 0;
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(213, 220, 239, 0.82);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 36px rgba(43, 54, 91, 0.07);
+  backdrop-filter: blur(18px);
+
+  &__context {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__pulse {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.12);
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__user-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    strong {
+      color: var(--color-text);
+      font-size: 0.86rem;
+    }
+
+    span {
+      color: var(--color-text-muted);
+      font-size: 0.72rem;
+    }
+  }
+
+  &__role {
+    padding: 0.32rem 0.62rem;
+    border: 1px solid rgba(79, 70, 229, 0.12);
+    border-radius: 999px;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--color-primary-gradient);
+    box-shadow: 0 8px 18px rgba(58, 70, 225, 0.28);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 900px) {
+  .shell {
+    flex-direction: column;
+
+    &__content {
+      padding: 1.25rem 1rem 2rem;
+    }
+  }
+
+  .topbar {
+    margin-top: 0;
+    border-radius: 0 0 18px 18px;
+
+    &__user-copy {
+      display: none;
+    }
+  }
+}

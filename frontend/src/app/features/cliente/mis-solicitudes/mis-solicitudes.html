@@ -1,0 +1,169 @@
+<div class="page-header">
+  <div>
+    <h1>Mis solicitudes</h1>
+    <p>Consulta y gestiona tus solicitudes de soporte.</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirCrear()">+ Nueva solicitud</button>
+</div>
+
+<div class="stat-grid">
+  <app-stat-card label="Total de solicitudes" [value]="stats().total" icon="clipboard" tone="primary" hint="Todas tus solicitudes" />
+  <app-stat-card label="Solicitudes activas" [value]="stats().activas" icon="clock" tone="warning" hint="Pendientes de resolución" />
+  <app-stat-card label="Solicitudes resueltas" [value]="stats().resueltas" icon="check" tone="success" hint="Completadas" />
+</div>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<div class="toolbar">
+  <div class="search-input">
+    <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+      <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
+      <path d="m17 17-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </svg>
+    <input
+      type="text"
+      placeholder="Buscar solicitudes"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="searchTerm.set($event)"
+    />
+  </div>
+
+  <div class="tabs">
+    <button type="button" [class.active]="tab() === 'todas'" (click)="tab.set('todas')">Todas</button>
+    <button type="button" [class.active]="tab() === 'pendientes'" (click)="tab.set('pendientes')">
+      Pendientes
+    </button>
+    <button type="button" [class.active]="tab() === 'resueltas'" (click)="tab.set('resueltas')">
+      Resueltas
+    </button>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="empty-state">Cargando...</div>
+} @else if (filtradas().length === 0) {
+  <div class="empty-state">
+    @if (solicitudes().length === 0) {
+      Aún no tienes solicitudes registradas.
+    } @else {
+      No hay solicitudes que coincidan con la búsqueda.
+    }
+  </div>
+} @else {
+  @for (s of filtradas(); track s.id) {
+    <div class="solicitud-card" [style.--priority-color]="colorPrioridad(s)">
+      <div class="solicitud-card__id"><span>SOLICITUD</span>{{ s.id }}</div>
+      <div class="solicitud-card__main">
+        <p class="solicitud-card__title">{{ s.titulo }}</p>
+        <p class="solicitud-card__meta">{{ s.descripcion }}</p>
+      </div>
+      <div class="solicitud-card__col">
+        <p class="solicitud-card__col-label">Prioridad</p>
+        <app-prioridad-badge [prioridad]="s.prioridad" />
+      </div>
+      <div class="solicitud-card__col">
+        <p class="solicitud-card__col-label">Estado</p>
+        <app-estado-badge [estado]="s.estado" />
+      </div>
+      <div class="solicitud-card__col">
+        <p class="solicitud-card__col-label">Técnico</p>
+        <p class="solicitud-card__col-value">{{ s.tecnicoAsignado?.nombre || 'Sin asignar' }}</p>
+      </div>
+      <div class="solicitud-card__actions">
+        @if (puedeEditar(s)) {
+          <button type="button" class="btn btn-secondary btn-sm" (click)="abrirEditar(s)">Editar</button>
+        }
+      </div>
+    </div>
+  }
+}
+
+@if (modalOpen()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    @if (!necesitaPerfil()) {
+      <form
+        class="modal"
+        [formGroup]="form"
+        (ngSubmit)="guardar()"
+        (click)="$event.stopPropagation()"
+      >
+        <h2>{{ editing() ? 'Editar solicitud' : 'Nueva solicitud' }}</h2>
+
+        @if (formError()) {
+          <div class="alert alert-error">{{ formError() }}</div>
+        }
+
+        <div class="form-field">
+          <label for="titulo">Título</label>
+          <input id="titulo" type="text" formControlName="titulo" />
+        </div>
+
+        <div class="form-field">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" formControlName="descripcion"></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="prioridad">Prioridad</label>
+          <select id="prioridad" formControlName="prioridad">
+            @for (p of prioridades; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    } @else {
+      <form
+        class="modal"
+        [formGroup]="perfilForm"
+        (ngSubmit)="guardarPerfil()"
+        (click)="$event.stopPropagation()"
+      >
+        <h2>Completa tu perfil de cliente</h2>
+        <p class="modal-hint">
+          Antes de tu primera solicitud necesitamos algunos datos de contacto.
+        </p>
+
+        @if (formError()) {
+          <div class="alert alert-error">{{ formError() }}</div>
+        }
+
+        <div class="form-field">
+          <label for="pnombre">Nombre</label>
+          <input id="pnombre" type="text" formControlName="nombre" />
+        </div>
+
+        <div class="form-field">
+          <label for="pcorreo">Correo</label>
+          <input id="pcorreo" type="email" formControlName="correo" />
+        </div>
+
+        <div class="form-field">
+          <label for="ptelefono">Teléfono (opcional)</label>
+          <input id="ptelefono" type="text" formControlName="telefono" />
+        </div>
+
+        <div class="form-field">
+          <label for="pempresa">Empresa (opcional)</label>
+          <input id="pempresa" type="text" formControlName="empresa" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando...' : 'Continuar' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+}

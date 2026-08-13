@@ -1,0 +1,130 @@
+<div class="page-header">
+  <div>
+    <h1>Clientes</h1>
+    <p>Clientes que reportan solicitudes de soporte.</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirCrear()">+ Nuevo cliente</button>
+</div>
+
+<div class="stat-grid directory-stats">
+  <app-stat-card label="Clientes registrados" [value]="stats().total" icon="users" tone="primary" hint="Total de clientes" />
+  <app-stat-card label="Con empresa" [value]="stats().conEmpresa" icon="building" tone="info" hint="Clientes empresariales" />
+  <app-stat-card label="Sin empresa" [value]="stats().sinEmpresa" icon="activity" tone="warning" hint="Clientes particulares" />
+  <app-stat-card label="Clientes con solicitudes" [value]="stats().conSolicitudes" icon="check" tone="success" hint="Han reportado al menos una" />
+</div>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<div class="toolbar directory-toolbar">
+  <div class="search-input">
+    <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+      <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
+      <path d="m17 17-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </svg>
+    <input type="text" placeholder="Buscar cliente, correo, teléfono o empresa" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+  </div>
+  <span class="directory-count">{{ filtrados().length }} resultados</span>
+</div>
+
+<div class="table-wrapper directory-table">
+  @if (loading()) {
+    <div class="empty-state">Cargando...</div>
+  } @else if (clientes().length === 0) {
+    <div class="empty-state">Aún no hay clientes registrados.</div>
+  } @else if (filtrados().length === 0) {
+    <div class="empty-state">No hay clientes que coincidan con la búsqueda.</div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Empresa</th>
+          <th class="text-center">Solicitudes</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of filtrados(); track c.id) {
+          <tr>
+            <td>{{ c.id }}</td>
+            <td>
+              <div class="entity-cell">
+                <span class="entity-avatar entity-avatar--client">{{ iniciales(c.nombre) }}</span>
+                <strong>{{ c.nombre }}</strong>
+              </div>
+            </td>
+            <td>{{ c.correo }}</td>
+            <td>{{ c.telefono || '—' }}</td>
+            <td><span class="soft-chip">{{ c.empresa || 'Sin empresa' }}</span></td>
+            <td class="text-center"><span class="soft-chip">{{ solicitudesDeCliente(c.id) }}</span></td>
+            <td class="actions actions--icons">
+              <button type="button" class="icon-btn" title="Editar" aria-label="Editar cliente" (click)="abrirEditar(c)">
+                <svg viewBox="0 0 20 20" fill="none"><path d="m4 13.8-.8 3 3-.8L15 7.2 12.8 5 4 13.8Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="m11.7 6.1 2.2 2.2" stroke="currentColor" stroke-width="1.5"/></svg>
+              </button>
+              <button type="button" class="icon-btn icon-btn--danger" title="Eliminar" aria-label="Eliminar cliente" (click)="eliminar(c)">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M4.5 6h11M8 3.5h4M6.2 6l.6 10h6.4l.6-10M8.3 9v4.5M11.7 9v4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+@if (modalOpen()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <form class="modal" [formGroup]="form" (ngSubmit)="guardar()" (click)="$event.stopPropagation()">
+      <h2>{{ editing() ? 'Editar cliente' : 'Nuevo cliente' }}</h2>
+
+      @if (formError()) {
+        <div class="alert alert-error">{{ formError() }}</div>
+      }
+
+      <div class="form-field">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" />
+      </div>
+
+      <div class="form-field">
+        <label for="correo">Correo</label>
+        <input id="correo" type="email" formControlName="correo" />
+      </div>
+
+      <div class="form-field">
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" type="text" formControlName="telefono" />
+      </div>
+
+      <div class="form-field">
+        <label for="empresa">Empresa</label>
+        <input id="empresa" type="text" formControlName="empresa" />
+      </div>
+
+      <div class="form-field">
+        <label for="usuarioId">Cuenta de login vinculada</label>
+        <select id="usuarioId" formControlName="usuarioId">
+          <option [ngValue]="null">Sin vincular</option>
+          @for (u of usuariosCliente(); track u.id) {
+            <option [ngValue]="u.id">{{ u.email }}</option>
+          }
+        </select>
+        <span class="field-hint">
+          Necesario para que esta persona vea sus solicitudes al iniciar sesión como CLIENTE.
+        </span>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">
+          {{ saving() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}
