@@ -1,0 +1,37 @@
+package com.zegel.users.users.config;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zegel.users.users.dto.ApiResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+
+import java.io.IOException;
+
+@Slf4j
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
+            throws IOException, ServletException {
+
+        log.warn("Authentication failed for request: {}", request.getRequestURI());
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ApiResponse<Object> apiResponse = ApiResponse.builder()
+            .responseCode("UNAUTHORIZED")
+            .responseMessage("No estás autenticado. Por favor, proporciona un token JWT válido")
+            .data(null)
+            .build();
+
+        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+    }
+}
